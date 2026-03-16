@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { produtos, getNextId } = require('../data/produtos');
+const { authMiddleware } = require('../middleware/auth');
+
+// Aplicar autenticação em todas as rotas de produtos
+router.use(authMiddleware);
 
 /**
  * @swagger

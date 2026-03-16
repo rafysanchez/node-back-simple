@@ -17,6 +17,14 @@ const swaggerOptions = {
       }
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Faça login em /auth/login e use o token retornado'
+        }
+      },
       schemas: {
         Produto: {
           type: 'object',
@@ -39,7 +47,8 @@ const swaggerOptions = {
           }
         }
       }
-    }
+    },
+    security: [{ bearerAuth: [] }]
   },
   apis: ['./src/routes/*.js']
 };

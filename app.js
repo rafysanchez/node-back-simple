@@ -1,6 +1,7 @@
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./src/config/swagger');
+const authRouter = require('./src/routes/auth');
 const produtosRouter = require('./src/routes/produtos');
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
+app.use('/auth', authRouter);
 app.use('/produtos', produtosRouter);
 
 // Health check
