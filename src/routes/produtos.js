@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { produtos, getNextId } = require('../data/produtos');
 const { authMiddleware } = require('../middleware/auth');
+const { validate, produtoSchema, produtoUpdateSchema } = require('../middleware/validation');
 
 // Aplicar autenticação em todas as rotas de produtos
 router.use(authMiddleware);
@@ -81,12 +82,8 @@ router.get('/:id', (req, res) => {
  *       400:
  *         description: Dados inválidos
  */
-router.post('/', (req, res) => {
-  const { nome, descricao, preco, estoque } = req.body;
-  
-  if (!nome || preco === undefined) {
-    return res.status(400).json({ erro: 'Nome e preço são obrigatórios' });
-  }
+router.post('/', validate(produtoSchema), (req, res) => {
+  const { nome, descricao, preco, estoque } = req.validatedBody;
   
   const novoProduto = {
     id: getNextId(),
@@ -131,14 +128,14 @@ router.post('/', (req, res) => {
  *       400:
  *         description: Dados inválidos
  */
-router.put('/:id', (req, res) => {
+router.put('/:id', validate(produtoUpdateSchema), (req, res) => {
   const produto = produtos.find(p => p.id === parseInt(req.params.id));
   
   if (!produto) {
     return res.status(404).json({ erro: 'Produto não encontrado' });
   }
   
-  const { nome, descricao, preco, estoque } = req.body;
+  const { nome, descricao, preco, estoque } = req.validatedBody;
   
   if (nome) produto.nome = nome;
   if (descricao !== undefined) produto.descricao = descricao;

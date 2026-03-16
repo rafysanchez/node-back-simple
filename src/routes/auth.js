@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { generateToken } = require('../middleware/auth');
 const { usuarios, verificarSenha } = require('../data/usuarios');
+const { validate, loginSchema } = require('../middleware/validation');
 
 /**
  * @swagger
@@ -42,12 +43,8 @@ const { usuarios, verificarSenha } = require('../data/usuarios');
  *       401:
  *         description: Credenciais inválidas
  */
-router.post('/login', (req, res) => {
-  const { username, senha } = req.body;
-  
-  if (!username || !senha) {
-    return res.status(400).json({ erro: 'Username e senha são obrigatórios' });
-  }
+router.post('/login', validate(loginSchema), (req, res) => {
+  const { username, senha } = req.validatedBody;
   
   const usuario = usuarios.find(u => u.username === username);
   

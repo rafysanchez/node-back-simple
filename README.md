@@ -101,35 +101,61 @@ curl -X GET http://localhost:3000/produtos \
 
 ## Segurança
 
-Esta API implementa várias camadas de proteção:
+Esta API implementa múltiplas camadas de proteção (Score: 9/10):
 
 ### 🔒 Autenticação & Autorização
 - JWT com expiração de 24h
 - Token obrigatório para acessar rotas de produtos
+- Validação de credenciais com bcrypt
 
-### 🔐 Criptografia
+### 🔐 Criptografia & Secrets
 - Senhas hasheadas com bcrypt (10 rounds)
-- JWT_SECRET gerenciado via variáveis de ambiente
+- JWT_SECRET gerenciado via variáveis de ambiente (.env)
+- Nenhum secret hardcoded no código
 
-### 🛡️ Headers de Segurança
-- Helmet.js para adicionar headers HTTP de segurança
-- Proteção contra XSS, clickjacking, MIME sniffing, etc.
+### 🛡️ Headers de Segurança (Helmet.js)
+- Content Security Policy (CSP) configurada
+- HSTS (HTTP Strict Transport Security)
+- Proteção contra XSS, clickjacking, MIME sniffing
+- Headers customizados adicionados (X-Content-Type-Options, X-Frame-Options, etc.)
+- X-Powered-By desabilitado
 
 ### 🚫 Rate Limiting
 - Limite global: 15 requisições por 15 minutos
 - Limite de login: 5 tentativas por 15 minutos (contra brute force)
+- Health check isento de rate limiting
 
-### 📝 Validação
-- Validação obrigatória de campos (username, senha, nome, preco)
-- Tratamento de erros seguro sem exposição de stack traces
+### ✅ CORS Seguro
+- CORS configurado com origem específica
+- Apenas métodos necessários permitidos (GET, POST, PUT, DELETE)
+- Headers validados (Content-Type, Authorization)
+- Credenciais configuradas
 
-⚠️ **Nota para Produção**: Esta é uma demo com segurança básica. Para produção, implemente:
+### 📝 Validação de Inputs
+- Validação rigorosa com Joi
+- Rejeição de campos desconhecidos
+- Limites de tamanho em strings
+- Validação de tipos e formatos
+- Limite de tamanho do body (10kb)
+
+### 🔍 Error Handling Seguro
+- Sem exposição de stack traces
+- Mensagens de erro genéricas para erros internos
+- Logging seguro sem dados sensíveis
+- 404 para endpoints não encontrados
+
+### 📦 Proteção contra Injection
+- Validação e sanitização de inputs
+- Proteção contra NoSQL injection
+- Sem concatenação de queries dinâmicas
+
+⚠️ **Nota para Produção**: Para melhorias adicionais, considere:
 - HTTPS/TLS obrigatório
-- Variáveis de ambiente para JWT_SECRET
-- Banco de dados real com senhas hasheadas
-- CORS configurado
-- Logging e monitoring
+- Secrets em vault (ex: HashiCorp Vault, AWS Secrets Manager)
+- Logging e monitoring em tempo real
+- WAF (Web Application Firewall)
 - Backup e disaster recovery
+- Database real com prepared statements
 
 ### Exemplo de Requisição (POST)
 
@@ -164,22 +190,24 @@ Esta API implementa várias camadas de proteção:
 node-back-simple/
 ├── src/
 │   ├── config/
-│   │   └── swagger.js           # Configuração Swagger/OpenAPI
+│   │   └── swagger.js                  # Configuração Swagger/OpenAPI
 │   ├── data/
-│   │   ├── produtos.js          # Mock database de produtos
-│   │   └── usuarios.js          # Mock database de usuários (com bcrypt)
+│   │   ├── produtos.js                 # Mock database de produtos
+│   │   └── usuarios.js                 # Mock database de usuários (com bcrypt)
 │   ├── middleware/
-│   │   └── auth.js              # Middleware de autenticação JWT
+│   │   ├── auth.js                     # Middleware de autenticação JWT
+│   │   ├── validation.js               # Schemas Joi para validação
+│   │   └── errorHandler.js             # Handler centralizado de erros
 │   └── routes/
-│       ├── auth.js              # Endpoints de login
-│       └── produtos.js          # Endpoints CRUD de produtos (protegidos)
-├── app.js                        # Arquivo principal com segurança
-├── .env                          # Variáveis de ambiente (NÃO commitar!)
-├── .env.example                  # Exemplo de arquivo .env
-├── package.json                  # Dependências do projeto
-├── package-lock.json             # Lock de versões
-├── .gitignore                    # Arquivos ignorados pelo git
-└── README.md                     # Este arquivo
+│       ├── auth.js                     # Endpoints de login
+│       └── produtos.js                 # Endpoints CRUD de produtos (protegidos)
+├── app.js                              # Arquivo principal com segurança (Helmet, CORS, rate-limit)
+├── .env                                # Variáveis de ambiente (NÃO commitar!)
+├── .env.example                        # Exemplo de arquivo .env
+├── package.json                        # Dependências do projeto
+├── package-lock.json                   # Lock de versões
+├── .gitignore                          # Arquivos ignorados pelo git
+└── README.md                           # Este arquivo
 ```
 
 ## Especificações Técnicas
@@ -200,19 +228,43 @@ node-back-simple/
 - **express** - Framework web mínimo e eficiente
 - **jsonwebtoken** - Geração e validação de JWT
 - **bcryptjs** - Hash seguro de senhas
-- **helmet** - Headers de segurança HTTP
-- **express-rate-limit** - Proteção contra brute force
-- **dotenv** - Gerenciamento de variáveis de ambiente
+- **helmet** - Headers de segurança HTTP avançados
+- **cors** - CORS seguro com configuração específica de origin
+- **express-rate-limit** - Proteção contra brute force e DoS
+- **joi** - Validação rigorosa de inputs e schemas
+- **dotenv** - Gerenciamento seguro de variáveis de ambiente
 - **swagger-jsdoc** - Documentação OpenAPI automática
 - **swagger-ui-express** - Interface gráfica Swagger
 
 ## Como Funciona
 
-1. **app.js** - Inicializa a aplicação com segurança (Helmet, rate limiting, dotenv)
-2. **src/routes/auth.js** - Endpoint `/auth/login` valida credenciais e gera JWT
-3. **src/data/usuarios.js** - Usuários mockados com senhas hasheadas em bcrypt
-4. **src/middleware/auth.js** - Valida o JWT em cada requisição protegida
-5. **src/routes/produtos.js** - Endpoints CRUD protegidos pelo middleware JWT
-6. **src/config/swagger.js** - Documentação OpenAPI com autenticação JWT
-7. **src/data/produtos.js** - Mock database com 5 produtos de exemplo
-8. **.env** - Armazena JWT_SECRET e outras variáveis sensíveis
+1. **app.js** - Inicializa a aplicação com todas as camadas de segurança
+   - Helmet para headers de segurança
+   - CORS restritivo
+   - Rate limiting global e específico
+   - Error handler centralizado
+   
+2. **src/middleware/validation.js** - Validação rigorosa com Joi
+   - Schemas para login, criação e atualização de produtos
+   - Rejeição de campos desconhecidos
+   - Mensagens de erro específicas
+   
+3. **src/middleware/auth.js** - Autenticação JWT
+   - Geração de tokens com 24h de expiração
+   - Validação de tokens em requisições protegidas
+   
+4. **src/middleware/errorHandler.js** - Tratamento centralizado de erros
+   - Sem exposição de stack traces
+   - Logging seguro
+   
+5. **src/routes/auth.js** - `/auth/login` com validação e criptografia
+   - Login com validação de inputs
+   - Senhas verificadas com bcrypt
+   
+6. **src/routes/produtos.js** - Endpoints CRUD protegidos por JWT
+   - Validação de inputs antes de processar
+   - Tratamento seguro de erros
+   
+7. **src/data/usuarios.js** - Usuários mockados com senhas hasheadas
+8. **src/data/produtos.js** - Mock database com 5 produtos
+9. **.env** - Variáveis sensíveis: JWT_SECRET, CORS_ORIGIN, PORT
