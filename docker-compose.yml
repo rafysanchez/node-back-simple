@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node-back-simple
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET:-sua-chave-secreta-segura-123}
+      - PORT=3000
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - node-network
+
+  # Opcional: Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: node-back-simple-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+    networks:
+      - node-network
+    restart: unless-stopped
+
+networks:
+  node-network:
+    driver: bridge

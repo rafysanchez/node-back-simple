@@ -1,5 +1,10 @@
 # API Produtos
 
+[![CI/CD Pipeline](https://github.com/rafysanchez/node-back-simple/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/rafysanchez/node-back-simple/actions/workflows/ci-cd.yml)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16-brightgreen)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/license-ISC-blue)](LICENSE)
+[![Security Grade](https://img.shields.io/badge/security-9%2F10-green)](README.md#segurança)
+
 Uma aplicação Node.js com Express que expõe uma API CRUD de produtos com dados mocados e autenticação JWT com melhorias de segurança.
 
 ## Recursos
@@ -24,6 +29,63 @@ Uma aplicação Node.js com Express que expõe uma API CRUD de produtos com dado
 ```bash
 npm install
 ```
+
+## Testes
+
+```bash
+# Executar testes
+npm test
+
+# Executar testes em modo watch
+npm run test:watch
+
+# Debug de testes
+npm run test:debug
+
+# Gerar cobertura de código
+npm test -- --coverage
+```
+
+Cobertura de testes: **50%+** em todas as métricas (branches, functions, lines, statements)
+
+## Docker
+
+### Com Docker Compose (Recomendado)
+
+```bash
+# Iniciar serviços (API + Nginx)
+docker-compose up -d
+
+# Acessar a API
+# http://localhost:3000/api-docs
+# http://localhost/api-docs (via Nginx)
+
+# Parar serviços
+docker-compose down
+```
+
+### Com Docker (Standalone)
+
+```bash
+# Build
+docker build -t node-back-simple:latest .
+
+# Run
+docker run -p 3000:3000 \
+  -e JWT_SECRET="sua-chave-secreta" \
+  -e CORS_ORIGIN="http://localhost:3000" \
+  node-back-simple:latest
+```
+
+## CI/CD
+
+Este repositório inclui GitHub Actions para:
+- ✅ Rodar testes em múltiplas versões de Node (16, 18, 20)
+- ✅ Análise de segurança com CodeQL
+- ✅ Verificação de vulnerabilidades
+- ✅ Build de imagem Docker
+
+Acesse as ações em: [GitHub Actions](https://github.com/rafysanchez/node-back-simple/actions)
 
 ## Configuração
 

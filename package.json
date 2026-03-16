@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node app.js",
     "dev": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage --detectOpenHandles",
+    "test:watch": "jest --watch",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix"
   },
   "keywords": [],
   "author": "",
@@ -22,5 +26,10 @@
     "jsonwebtoken": "^9.0.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^10.0.3",
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2"
   }
 }
