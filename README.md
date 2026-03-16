@@ -7,7 +7,7 @@
 [![Security Grade](https://img.shields.io/badge/security-9%2F10-green)](README.md#segurança)
 
 Uma aplicação Node.js com Express que expõe uma API CRUD de produtos com dados mocados e autenticação JWT com melhorias de segurança.
-
+    
 ## Recursos
 
 - ✅ Endpoints CRUD completos para produtos
