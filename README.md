@@ -1,6 +1,7 @@
 # API Produtos
 
 [![CI/CD Pipeline](https://github.com/rafysanchez/node-back-simple/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/rafysanchez/node-back-simple/actions/workflows/ci-cd.yml)
+[![Docker Image](https://img.shields.io/badge/docker-rafysanchez%2Fnode--back--simple-blue?logo=docker)](https://hub.docker.com/r/rafysanchez/node-back-simple)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16-brightgreen)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-ISC-blue)](LICENSE)
 [![Security Grade](https://img.shields.io/badge/security-9%2F10-green)](README.md#segurança)
