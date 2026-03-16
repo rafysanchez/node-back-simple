@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../app');
+const app = require('../../app');
 
 describe('Health Check', () => {
   test('GET /health should return 200', async () => {
@@ -18,7 +18,7 @@ describe('Not Found Handler', () => {
       .get('/undefined-route')
       .expect(404);
 
-    expect(response.body).toHaveProperty('erro', 'Endpoint não encontrado');
+    expect(response.body).toHaveProperty('erro', 'Endpoint nao encontrado');
   });
 });
 
@@ -27,7 +27,6 @@ describe('CORS', () => {
     const response = await request(app)
       .get('/health');
 
-    // Headers de CORS devem estar presentes
     expect(response.headers['access-control-allow-origin']).toBeDefined();
   });
 });

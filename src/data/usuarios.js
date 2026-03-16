@@ -1,28 +1,22 @@
 const bcrypt = require('bcryptjs');
 
-// Usuários mockados com senhas hasheadas
-// Em produção, seria um banco de dados real
 const usuarios = [
   {
     id: 1,
     username: 'admin',
-    // Hash de 'admin123'
-    senha: '$2a$10$EIJqoD0lR0dymLmrVHFkCOYPQ8ptNmRQSstSxYT0tIUgO948/ZPIK'
+    senha: '$2b$10$MEd.80x2RQEi68zX11gCKuIePNMfEmdmzx1kUtvAJKfNRlu2BDx42'
   },
   {
     id: 2,
     username: 'user',
-    // Hash de 'user123'
-    senha: '$2a$10$r/6RnZ0xB1qKm5fkIKqxnOLFBU4RuvDzXiFpJj82mccGKzVDLBGei'
+    senha: '$2b$10$87Ci3t5BcY6V3myA3BUoC.808olVxZbzO/k7SaX/BNVgpRaxe2OSO'
   }
 ];
 
-// Função auxiliar para verificar senha
 const verificarSenha = (senhaPlain, senhaHash) => {
   return bcrypt.compareSync(senhaPlain, senhaHash);
 };
 
-// Função auxiliar para gerar hash (para uso em development)
 const hashSenha = (senha) => {
   return bcrypt.hashSync(senha, 10);
 };

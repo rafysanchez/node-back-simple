@@ -1,17 +1,17 @@
 const request = require('supertest');
-const app = require('../app');
+const app = require('../../app');
 
 let validToken;
 
 describe('Produtos Endpoints', () => {
   beforeAll(async () => {
-    // Fazer login para obter token válido
     const response = await request(app)
       .post('/auth/login')
       .send({
         username: 'admin',
         senha: 'admin123'
       });
+
     validToken = response.body.token;
   });
 
@@ -72,7 +72,7 @@ describe('Produtos Endpoints', () => {
         .set('Authorization', `Bearer ${validToken}`)
         .send({
           nome: 'Produto Teste',
-          descricao: 'Descrição do teste',
+          descricao: 'Descricao do teste',
           preco: 99.99,
           estoque: 5
         })

@@ -11,17 +11,16 @@ const errorHandler = require('./src/middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const isTestEnv = process.env.NODE_ENV === 'test';
 
-// CORS - permite apenas requisições de origins específicos
 const corsOptions = {
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  maxAge: 600 // 10 minutos
+  maxAge: 600
 };
 
-// Middleware de segurança
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -32,7 +31,7 @@ app.use(helmet({
     }
   },
   hsts: {
-    maxAge: 31536000, // 1 ano
+    maxAge: 31536000,
     includeSubDomains: true,
     preload: true
   }
@@ -40,37 +39,30 @@ app.use(helmet({
 
 app.use(cors(corsOptions));
 
-// Rate limiting - máximo de 15 requisições por 15 minutos
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 15,
-  message: 'Muitas requisições, tente novamente mais tarde',
+  message: 'Muitas requisicoes, tente novamente mais tarde',
   standardHeaders: true,
   legacyHeaders: false,
-  // Skip health check do rate limiting
   skip: (req) => req.path === '/health'
 });
 
-// Rate limiting mais agressivo para login
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
   message: 'Muitas tentativas de login, tente novamente mais tarde',
-  skipSuccessfulRequests: true // Não conta requisições bem-sucedidas
+  skipSuccessfulRequests: true
 });
 
-// Middleware
-// Limitar tamanho do body
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ limit: '10kb' }));
 
-// Rate limiting global
-app.use(limiter);
-
-// Remover header X-Powered-By
+if (!isTestEnv) {
+  app.use(limiter);
+}
 app.disable('x-powered-by');
 
-// Adicionar headers de segurança customizados
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -79,30 +71,27 @@ app.use((req, res, next) => {
   next();
 });
 
-// Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Routes
-app.use('/auth', loginLimiter, authRouter);
+app.use('/auth', ...(isTestEnv ? [] : [loginLimiter]), authRouter);
 app.use('/produtos', produtosRouter);
 
-// Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// 404 handler
 app.use((req, res) => {
-  res.status(404).json({ erro: 'Endpoint não encontrado' });
+  res.status(404).json({ erro: 'Endpoint nao encontrado' });
 });
 
-// Error handler (deve ser o último middleware)
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-  console.log(`Swagger disponível em http://localhost:${PORT}/api-docs`);
-  console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`CORS permitido para: ${corsOptions.origin}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`Swagger disponivel em http://localhost:${PORT}/api-docs`);
+    console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`CORS permitido para: ${corsOptions.origin}`);
+  });
+}
+
+module.exports = app;
