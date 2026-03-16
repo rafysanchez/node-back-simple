@@ -99,15 +99,15 @@ const validate = (schema) => {
       abortEarly: false,
       stripUnknown: true
     });
-    
+
     if (error) {
       const messages = error.details.map(detail => detail.message);
-      return res.status(400).json({ 
+      return res.status(400).json({
         erro: 'Validação falhou',
         detalhes: messages
       });
     }
-    
+
     req.validatedBody = value;
     next();
   };

@@ -11,7 +11,7 @@ describe('Auth Endpoints', () => {
           senha: 'admin123'
         })
         .expect(200);
-      
+
       expect(response.body).toHaveProperty('token');
       expect(response.body).toHaveProperty('usuario', 'admin');
       expect(response.body).toHaveProperty('mensagem');
@@ -25,7 +25,7 @@ describe('Auth Endpoints', () => {
           senha: 'user123'
         })
         .expect(200);
-      
+
       expect(response.body).toHaveProperty('token');
       expect(response.body.usuario).toBe('user');
     });
@@ -38,7 +38,7 @@ describe('Auth Endpoints', () => {
           senha: 'password'
         })
         .expect(401);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
 
@@ -50,7 +50,7 @@ describe('Auth Endpoints', () => {
           senha: 'wrongpassword'
         })
         .expect(401);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
 
@@ -61,7 +61,7 @@ describe('Auth Endpoints', () => {
           senha: 'admin123'
         })
         .expect(400);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
 
@@ -72,7 +72,7 @@ describe('Auth Endpoints', () => {
           username: 'admin'
         })
         .expect(400);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
 
@@ -84,7 +84,7 @@ describe('Auth Endpoints', () => {
           senha: 'admin123'
         })
         .expect(400);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
 
@@ -96,7 +96,7 @@ describe('Auth Endpoints', () => {
           senha: '123'
         })
         .expect(400);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
   });

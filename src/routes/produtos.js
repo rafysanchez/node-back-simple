@@ -52,11 +52,11 @@ router.get('/', (req, res) => {
  */
 router.get('/:id', (req, res) => {
   const produto = produtos.find(p => p.id === parseInt(req.params.id));
-  
+
   if (!produto) {
     return res.status(404).json({ erro: 'Produto não encontrado' });
   }
-  
+
   res.json(produto);
 });
 
@@ -84,7 +84,7 @@ router.get('/:id', (req, res) => {
  */
 router.post('/', validate(produtoSchema), (req, res) => {
   const { nome, descricao, preco, estoque } = req.validatedBody;
-  
+
   const novoProduto = {
     id: getNextId(),
     nome,
@@ -92,7 +92,7 @@ router.post('/', validate(produtoSchema), (req, res) => {
     preco: parseFloat(preco),
     estoque: estoque || 0
   };
-  
+
   produtos.push(novoProduto);
   res.status(201).json(novoProduto);
 });
@@ -130,18 +130,18 @@ router.post('/', validate(produtoSchema), (req, res) => {
  */
 router.put('/:id', validate(produtoUpdateSchema), (req, res) => {
   const produto = produtos.find(p => p.id === parseInt(req.params.id));
-  
+
   if (!produto) {
     return res.status(404).json({ erro: 'Produto não encontrado' });
   }
-  
+
   const { nome, descricao, preco, estoque } = req.validatedBody;
-  
-  if (nome) produto.nome = nome;
-  if (descricao !== undefined) produto.descricao = descricao;
-  if (preco !== undefined) produto.preco = parseFloat(preco);
-  if (estoque !== undefined) produto.estoque = estoque;
-  
+
+  if (nome) {produto.nome = nome;}
+  if (descricao !== undefined) {produto.descricao = descricao;}
+  if (preco !== undefined) {produto.preco = parseFloat(preco);}
+  if (estoque !== undefined) {produto.estoque = estoque;}
+
   res.json(produto);
 });
 
@@ -166,11 +166,11 @@ router.put('/:id', validate(produtoUpdateSchema), (req, res) => {
  */
 router.delete('/:id', (req, res) => {
   const index = produtos.findIndex(p => p.id === parseInt(req.params.id));
-  
+
   if (index === -1) {
     return res.status(404).json({ erro: 'Produto não encontrado' });
   }
-  
+
   produtos.splice(index, 1);
   res.status(204).send();
 });

@@ -45,15 +45,15 @@ const { validate, loginSchema } = require('../middleware/validation');
  */
 router.post('/login', validate(loginSchema), (req, res) => {
   const { username, senha } = req.validatedBody;
-  
+
   const usuario = usuarios.find(u => u.username === username);
-  
+
   if (!usuario || !verificarSenha(senha, usuario.senha)) {
     return res.status(401).json({ erro: 'Username ou senha inválidos' });
   }
-  
+
   const token = generateToken(usuario);
-  
+
   res.json({
     token,
     usuario: usuario.username,

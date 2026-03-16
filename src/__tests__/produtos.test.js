@@ -20,7 +20,7 @@ describe('Produtos Endpoints', () => {
       const response = await request(app)
         .get('/produtos')
         .expect(401);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
 
@@ -29,7 +29,7 @@ describe('Produtos Endpoints', () => {
         .get('/produtos')
         .set('Authorization', `Bearer ${validToken}`)
         .expect(200);
-      
+
       expect(Array.isArray(response.body)).toBe(true);
       expect(response.body.length).toBeGreaterThan(0);
     });
@@ -40,7 +40,7 @@ describe('Produtos Endpoints', () => {
       const response = await request(app)
         .get('/produtos/1')
         .expect(401);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
 
@@ -49,7 +49,7 @@ describe('Produtos Endpoints', () => {
         .get('/produtos/1')
         .set('Authorization', `Bearer ${validToken}`)
         .expect(200);
-      
+
       expect(response.body).toHaveProperty('id', 1);
       expect(response.body).toHaveProperty('nome');
       expect(response.body).toHaveProperty('preco');
@@ -60,7 +60,7 @@ describe('Produtos Endpoints', () => {
         .get('/produtos/99999')
         .set('Authorization', `Bearer ${validToken}`)
         .expect(404);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
   });
@@ -77,14 +77,14 @@ describe('Produtos Endpoints', () => {
           estoque: 5
         })
         .expect(201);
-      
+
       expect(response.body).toHaveProperty('id');
       expect(response.body).toHaveProperty('nome', 'Produto Teste');
       expect(response.body).toHaveProperty('preco', 99.99);
     });
 
     test('should fail without token', async () => {
-      const response = await request(app)
+      await request(app)
         .post('/produtos')
         .send({
           nome: 'Produto Teste',
@@ -101,7 +101,7 @@ describe('Produtos Endpoints', () => {
           preco: 99.99
         })
         .expect(400);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
 
@@ -113,7 +113,7 @@ describe('Produtos Endpoints', () => {
           nome: 'Produto Teste'
         })
         .expect(400);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
 
@@ -126,7 +126,7 @@ describe('Produtos Endpoints', () => {
           preco: -10
         })
         .expect(400);
-      
+
       expect(response.body).toHaveProperty('erro');
     });
   });
