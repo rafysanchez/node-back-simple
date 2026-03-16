@@ -13,6 +13,9 @@ Uma aplicação Node.js com Express que expõe uma API CRUD de produtos com dado
 - ✅ Endpoints CRUD completos para produtos
 - ✅ Autenticação JWT para proteger as rotas
 - ✅ Senhas hasheadas com bcrypt
+- ✅ CI/CD automático (GitHub Actions)
+- ✅ Docker e Docker Compose inclusos
+- ✅ Testes unitários com Jest e supertest
 - ✅ Headers de segurança com Helmet
 - ✅ Rate limiting para prevenir brute force
 - ✅ Variáveis de ambiente para secrets
