@@ -1,15 +1,18 @@
 # API Produtos
 
-Uma aplicação Node.js com Express que expõe uma API CRUD de produtos com dados mocados e autenticação JWT.
+Uma aplicação Node.js com Express que expõe uma API CRUD de produtos com dados mocados e autenticação JWT com melhorias de segurança.
 
 ## Recursos
 
 - ✅ Endpoints CRUD completos para produtos
 - ✅ Autenticação JWT para proteger as rotas
+- ✅ Senhas hasheadas com bcrypt
+- ✅ Headers de segurança com Helmet
+- ✅ Rate limiting para prevenir brute force
+- ✅ Variáveis de ambiente para secrets
 - ✅ Swagger/OpenAPI para documentação e testes interativos
 - ✅ 5 produtos de exemplo pré-carregados
-- ✅ Validações básicas
-- ✅ Estrutura simples e limpa
+- ✅ Estrutura modular e escalável
 
 ## Pré-requisitos
 
@@ -21,6 +24,16 @@ Uma aplicação Node.js com Express que expõe uma API CRUD de produtos com dado
 ```bash
 npm install
 ```
+
+## Configuração
+
+Copie o arquivo `.env.example` para `.env` e atualize com suas variáveis:
+
+```bash
+cp .env.example .env
+```
+
+⚠️ **Importante**: Mude o `JWT_SECRET` em `.env` com uma chave segura em produção!
 
 ## Execução
 
@@ -86,6 +99,38 @@ curl -X GET http://localhost:3000/produtos \
 | PUT | `/produtos/:id` | Atualiza um produto |
 | DELETE | `/produtos/:id` | Remove um produto |
 
+## Segurança
+
+Esta API implementa várias camadas de proteção:
+
+### 🔒 Autenticação & Autorização
+- JWT com expiração de 24h
+- Token obrigatório para acessar rotas de produtos
+
+### 🔐 Criptografia
+- Senhas hasheadas com bcrypt (10 rounds)
+- JWT_SECRET gerenciado via variáveis de ambiente
+
+### 🛡️ Headers de Segurança
+- Helmet.js para adicionar headers HTTP de segurança
+- Proteção contra XSS, clickjacking, MIME sniffing, etc.
+
+### 🚫 Rate Limiting
+- Limite global: 15 requisições por 15 minutos
+- Limite de login: 5 tentativas por 15 minutos (contra brute force)
+
+### 📝 Validação
+- Validação obrigatória de campos (username, senha, nome, preco)
+- Tratamento de erros seguro sem exposição de stack traces
+
+⚠️ **Nota para Produção**: Esta é uma demo com segurança básica. Para produção, implemente:
+- HTTPS/TLS obrigatório
+- Variáveis de ambiente para JWT_SECRET
+- Banco de dados real com senhas hasheadas
+- CORS configurado
+- Logging e monitoring
+- Backup e disaster recovery
+
 ### Exemplo de Requisição (POST)
 
 ```json
@@ -122,13 +167,15 @@ node-back-simple/
 │   │   └── swagger.js           # Configuração Swagger/OpenAPI
 │   ├── data/
 │   │   ├── produtos.js          # Mock database de produtos
-│   │   └── usuarios.js          # Mock database de usuários
+│   │   └── usuarios.js          # Mock database de usuários (com bcrypt)
 │   ├── middleware/
 │   │   └── auth.js              # Middleware de autenticação JWT
 │   └── routes/
 │       ├── auth.js              # Endpoints de login
 │       └── produtos.js          # Endpoints CRUD de produtos (protegidos)
-├── app.js                        # Arquivo principal
+├── app.js                        # Arquivo principal com segurança
+├── .env                          # Variáveis de ambiente (NÃO commitar!)
+├── .env.example                  # Exemplo de arquivo .env
 ├── package.json                  # Dependências do projeto
 ├── package-lock.json             # Lock de versões
 ├── .gitignore                    # Arquivos ignorados pelo git
@@ -140,23 +187,32 @@ node-back-simple/
 - **Runtime**: Node.js 14+
 - **Framework**: Express.js 5.2.1
 - **Autenticação**: JWT (jsonwebtoken)
+- **Criptografia**: bcryptjs para hash de senhas
+- **Segurança**: Helmet para headers de segurança
+- **Rate Limiting**: express-rate-limit
 - **Documentação API**: Swagger/OpenAPI 3.0
 - **Database**: Em memória (mock)
 - **Porta**: 3000 (configurável via `PORT`)
+- **Ambiente**: Gerenciado via dotenv
 
 ## Stack Tecnológico
 
 - **express** - Framework web mínimo e eficiente
-- **jsonwebtoken** - Geração e validação de JWT para autenticação
-- **swagger-jsdoc** - Geração automática de documentação OpenAPI
-- **swagger-ui-express** - Interface gráfica para testar API
+- **jsonwebtoken** - Geração e validação de JWT
+- **bcryptjs** - Hash seguro de senhas
+- **helmet** - Headers de segurança HTTP
+- **express-rate-limit** - Proteção contra brute force
+- **dotenv** - Gerenciamento de variáveis de ambiente
+- **swagger-jsdoc** - Documentação OpenAPI automática
+- **swagger-ui-express** - Interface gráfica Swagger
 
 ## Como Funciona
 
-1. **app.js** - Inicializa a aplicação Express e carrega as rotas
-2. **src/routes/auth.js** - Endpoint de login que gera um JWT válido por 24h
-3. **src/middleware/auth.js** - Middleware que valida o JWT em cada requisição
-4. **src/routes/produtos.js** - Endpoints CRUD protegidos pelo middleware JWT
-5. **src/config/swagger.js** - Define a documentação OpenAPI com segurança JWT
-6. **src/data/usuarios.js** - Usuários mockados para autenticação
-7. **src/data/produtos.js** - Banco de dados em memória com 5 produtos de exemplo
+1. **app.js** - Inicializa a aplicação com segurança (Helmet, rate limiting, dotenv)
+2. **src/routes/auth.js** - Endpoint `/auth/login` valida credenciais e gera JWT
+3. **src/data/usuarios.js** - Usuários mockados com senhas hasheadas em bcrypt
+4. **src/middleware/auth.js** - Valida o JWT em cada requisição protegida
+5. **src/routes/produtos.js** - Endpoints CRUD protegidos pelo middleware JWT
+6. **src/config/swagger.js** - Documentação OpenAPI com autenticação JWT
+7. **src/data/produtos.js** - Mock database com 5 produtos de exemplo
+8. **.env** - Armazena JWT_SECRET e outras variáveis sensíveis

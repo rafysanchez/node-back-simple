@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const SECRET = 'sua-chave-secreta-super-segura-123';
+const SECRET = process.env.JWT_SECRET || 'default-secret-change-in-production';
 
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];

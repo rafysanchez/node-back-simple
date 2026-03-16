@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { generateToken } = require('../middleware/auth');
-const usuarios = require('../data/usuarios');
+const { usuarios, verificarSenha } = require('../data/usuarios');
 
 /**
  * @swagger
@@ -49,9 +49,9 @@ router.post('/login', (req, res) => {
     return res.status(400).json({ erro: 'Username e senha são obrigatórios' });
   }
   
-  const usuario = usuarios.find(u => u.username === username && u.senha === senha);
+  const usuario = usuarios.find(u => u.username === username);
   
-  if (!usuario) {
+  if (!usuario || !verificarSenha(senha, usuario.senha)) {
     return res.status(401).json({ erro: 'Username ou senha inválidos' });
   }
   
